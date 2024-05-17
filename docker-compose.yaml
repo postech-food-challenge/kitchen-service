@@ -15,9 +15,9 @@ services:
 
   app:
     build: ./
-    container_name: ktor-sample
+    container_name: kitchen-ms
     volumes:
-      - ./:/ktor-sample
+      - ./:/kitchen-ms
     ports:
       - "8080:8080"
     expose:
