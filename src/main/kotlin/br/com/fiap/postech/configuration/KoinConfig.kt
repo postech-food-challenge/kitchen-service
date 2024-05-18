@@ -1,9 +1,12 @@
-package com.example.configuration
+package br.com.fiap.postech.configuration
 
-import com.example.application.usecases.ListOrdersInteract
-import com.example.application.usecases.UpdateOrderStatusInteract
-import com.example.infraestructure.gateways.OrderGatewayImpl
-import com.example.infraestructure.persistence.OrderRepositoryImpl
+import br.com.fiap.postech.application.usecases.ListOrdersInteract
+import br.com.fiap.postech.application.usecases.StartOrderInteract
+import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
+import br.com.fiap.postech.infraestructure.gateways.OrderGatewayImpl
+import br.com.fiap.postech.infraestructure.persistence.OrderRepositoryImpl
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
 import io.ktor.server.application.*
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -20,5 +23,6 @@ val modules = module {
     single<OrderGatewayImpl> { orderGateway }
     single<UpdateOrderStatusInteract> { UpdateOrderStatusInteract(orderGateway) }
     single<ListOrdersInteract> { ListOrdersInteract(orderGateway) }
+    single<StartOrderInteract> { StartOrderInteract(orderGateway) }
 }
 

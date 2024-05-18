@@ -1,4 +1,4 @@
-package com.example.configuration
+package br.com.fiap.postech.configuration
 
 import com.fasterxml.jackson.databind.*
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule

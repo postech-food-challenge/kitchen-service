@@ -1,4 +1,4 @@
-package com.example.domain.exceptions
+package br.com.fiap.postech.domain.exceptions
 
 data class ExceptionResponse(
     val message: String,

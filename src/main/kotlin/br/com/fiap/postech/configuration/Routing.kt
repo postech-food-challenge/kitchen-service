@@ -1,8 +1,10 @@
-package com.example.configuration
+package br.com.fiap.postech.configuration
 
-import com.example.application.usecases.ListOrdersInteract
-import com.example.application.usecases.UpdateOrderStatusInteract
-import com.example.infraestructure.controller.UpdateOrderStatusRequest
+import br.com.fiap.postech.application.usecases.ListOrdersInteract
+import br.com.fiap.postech.application.usecases.StartOrderInteract
+import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
+import br.com.fiap.postech.domain.entities.OrderItem
+import br.com.fiap.postech.infraestructure.controller.UpdateOrderStatusRequest
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -16,6 +18,7 @@ fun Application.configureRouting() {
 
     val listOrdersInteract by inject<ListOrdersInteract>()
 
+    val startOrderInteract by inject<StartOrderInteract>()
 
     routing {
         route("/kitchen") {
@@ -43,6 +46,23 @@ fun Application.configureRouting() {
                     listOrdersInteract.listOrders(status)
                 );
             }
+
+            post("/start/{id}") {
+                val orderId = call.parameters["id"]?.toLongOrNull();
+
+                val items = call.receive<List<OrderItem>>()
+
+                if (orderId == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Invalid ID")
+                    return@post
+                }
+
+                call.respond(
+                    HttpStatusCode.OK,
+                    startOrderInteract.receive(orderId, items)
+                );
+            }
+
         }
 
     }

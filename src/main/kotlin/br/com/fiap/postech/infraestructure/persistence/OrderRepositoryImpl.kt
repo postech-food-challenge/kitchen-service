@@ -1,97 +1,114 @@
-package com.example.infraestructure.persistence
+package br.com.fiap.postech.infraestructure.persistence
 
-import com.example.infraestructure.persistence.entities.OrderEntity
-import com.example.infraestructure.persistence.entities.OrderItemEntity
-import com.example.infraestructure.persistence.entities.OrderItems
-import com.example.infraestructure.persistence.entities.Orders
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
+import aws.sdk.kotlin.services.dynamodb.model.*
+import br.com.fiap.postech.domain.entities.Order
+import br.com.fiap.postech.domain.entities.OrderStatus
+import br.com.fiap.postech.infraestructure.aws.DynamoDBClientProvider
 
 class OrderRepositoryImpl : OrderRepository {
-    override fun findById(id: Long): OrderEntity? {
 
-        return  transaction {
-            (Orders leftJoin OrderItems)
-                .select { Orders.id eq id }
-                .groupBy{it[Orders.id]}
-                .mapNotNull { gp ->
-                    val row = gp.value.firstOrNull()
-                    row?.let {
-                        mapToOrderEntity(it, gp.value)
-                    }
-                }.singleOrNull()
-        }
+    companion object {
+        const val TABLE_NAME = "orders"
+        const val KEY_COLUMN_NAME = "id"
     }
 
-    override fun findActiveOrdersSorted(): List<OrderEntity> {
-        return  transaction {
-            (Orders leftJoin OrderItems)
-                .select { Orders.status notInList (listOf("COMPLETED", "CANCELED")) }
-                .orderBy(statusCustomOrdering() to SortOrder.ASC)
-                .groupBy{it[Orders.id]}
-                .mapNotNull { gp ->
-                    val row = gp.value.firstOrNull()
-                    row?.let {
-                        mapToOrderEntity(it, gp.value)
-                    }
-                }.toList()
+    override suspend fun findById(id: Long): Map<String, AttributeValue>? {
+        val client = DynamoDBClientProvider.getClient()
+
+        val keyToGet = mutableMapOf<String, AttributeValue>()
+        keyToGet[KEY_COLUMN_NAME] = AttributeValue.N(id.toString())
+
+        val request = GetItemRequest {
+            key = keyToGet
+            tableName = TABLE_NAME
         }
 
+        val returnedItem = client.getItem(request);
+
+        return returnedItem.item
     }
 
-    override fun findByStatus(status: String): List<OrderEntity> {
-        return  transaction {
-            (Orders leftJoin OrderItems)
-                .select { Orders.status eq status }
-                .orderBy(Orders.createdAt to SortOrder.ASC)
-                .groupBy{it[Orders.id]}
-                .mapNotNull { gp ->
-                    val row = gp.value.firstOrNull()
-                    row?.let {
-                        mapToOrderEntity(it, gp.value)
-                    }
-                }.toList()
+    override suspend fun findActiveOrdersSorted(): List<Map<String, AttributeValue>>? {
+        val client = DynamoDBClientProvider.getClient()
+
+        val aliases = mapOf("#s" to "status")
+
+        val request = ScanRequest {
+            tableName = TABLE_NAME
+            filterExpression = "#s <> :completed AND #s <> :canceled"
+            expressionAttributeNames = aliases
+            expressionAttributeValues = mapOf(
+                ":completed" to AttributeValue.S(OrderStatus.READY.name),
+                ":canceled" to AttributeValue.S(OrderStatus.CANCELED.name)
+            )
         }
+
+        val scanResponse = client.scan(request)
+        return scanResponse.items
     }
 
+    override suspend fun findByStatus(status: String): List<Map<String, AttributeValue>>? {
+        val client = DynamoDBClientProvider.getClient()
 
-    override fun update(id: Long, newStatus: String): OrderEntity? {
-        val orderEntity = findById(id)
+        val aliases = mapOf("#s" to "status")
 
-        orderEntity ?.let {
-            transaction {
-                orderEntity.apply {
-                    status = newStatus
-                }
-            }
+        val request = ScanRequest {
+            tableName = TABLE_NAME
+            filterExpression = "#s = :status"
+            expressionAttributeNames = aliases
+            expressionAttributeValues = mapOf(":status" to AttributeValue.S(status))
         }
-        return orderEntity
+
+        val scanResponse = client.scan(request)
+        return scanResponse.items
     }
 
-    private fun mapToOrderEntity(row: ResultRow, itemEntities: List<ResultRow>): OrderEntity {
-        val orderId = row[Orders.id]
-        val customerCpf = row[Orders.cpf]
-        val status = row[Orders.status]
-        val createdAt = row[Orders.createdAt]
-        val items =
-            if (row[OrderItems.id] != null) {
-                itemEntities.map {
-                    OrderItemEntity(
-                        id = it[OrderItems.id],
-                        productId = it[OrderItems.productId].value,
-                        orderId = it[OrderItems.orderId].value,
-                        quantity = it[OrderItems.quantity],
-                        observations = it[OrderItems.observations],
-                        toGo = it[OrderItems.toGo]
-                    )
-                }
-            } else {
-                Collections.emptyList()
-            }
+    override suspend fun update(id: Long, newStatus: String): Map<String, AttributeValue> {
+        val client = DynamoDBClientProvider.getClient()
 
-        return OrderEntity(orderId, customerCpf, status, createdAt, items)
+        val itemKey = mutableMapOf<String, AttributeValue>()
+        itemKey[KEY_COLUMN_NAME] = AttributeValue.N(id.toString())
+
+        val updatedValues = mutableMapOf<String, AttributeValueUpdate>()
+        updatedValues["status"] = AttributeValueUpdate {
+            value = AttributeValue.S(newStatus)
+            action = AttributeAction.Put
+        }
+
+        val request = UpdateItemRequest {
+            tableName = TABLE_NAME
+            key = itemKey
+            attributeUpdates = updatedValues
+        }
+        client.updateItem(request)
+
+        return findById(id)!!
+    }
+
+    override suspend fun create(order: Order): Map<String, AttributeValue>? {
+        val client = DynamoDBClientProvider.getClient()
+
+        val request = PutItemRequest {
+            tableName = "orders"
+            item = Order.toMap(order)
+        }
+
+        client.putItem(request)
+
+        return  findById(order.id)
+    }
+
+    override suspend fun delete(id: Long) {
+        val client = DynamoDBClientProvider.getClient()
+
+        val keyToGet = mutableMapOf<String, AttributeValue>()
+        keyToGet[KEY_COLUMN_NAME] = AttributeValue.N(id.toString())
+
+        val request = DeleteItemRequest {
+            tableName = TABLE_NAME
+            key = keyToGet
+        }
+
+        client.deleteItem(request)
     }
 }
