@@ -40,7 +40,7 @@ data class Order(
         fun toMap(order: Order): Map<String, AttributeValue> {
             val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
             return mapOf(
-                "id" to (order.id.let { AttributeValue.N(it.toString()) } ?: AttributeValue.Null(true)),
+                "id" to (order.id.let { AttributeValue.N(it.toString()) }),
                 "items" to AttributeValue.L(order.items.map { AttributeValue.M (OrderItem.toMap(it))}),
                 "status" to AttributeValue.S(order.status.name),
                 "createdAt" to AttributeValue.S(order.createdAt.format(formatter))

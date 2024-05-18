@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
 
 class UpdateOrderStatusSteps {
 
-    var currentOrderId = 0;
+    private var currentOrderId = 0
     private lateinit var currentStatusOnRequest: String
     private lateinit var response: Response
 

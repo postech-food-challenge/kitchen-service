@@ -23,7 +23,7 @@ fun Application.configureRouting() {
     routing {
         route("/kitchen") {
             patch("/{id}") {
-                val orderId = call.parameters["id"]?.toLongOrNull();
+                val orderId = call.parameters["id"]?.toLongOrNull()
 
                 if (orderId == null) {
                     call.respond(HttpStatusCode.BadRequest, "Invalid ID")
@@ -35,7 +35,7 @@ fun Application.configureRouting() {
                 call.respond(
                     HttpStatusCode.OK,
                     updateOrderStatusInteract.updateOrderStatus(orderId, bodyDto.status)
-                );
+                )
             }
 
             get("") {
@@ -44,11 +44,11 @@ fun Application.configureRouting() {
                 call.respond(
                     HttpStatusCode.OK,
                     listOrdersInteract.listOrders(status)
-                );
+                )
             }
 
             post("/start/{id}") {
-                val orderId = call.parameters["id"]?.toLongOrNull();
+                val orderId = call.parameters["id"]?.toLongOrNull()
 
                 val items = call.receive<List<OrderItem>>()
 
@@ -60,7 +60,7 @@ fun Application.configureRouting() {
                 call.respond(
                     HttpStatusCode.OK,
                     startOrderInteract.receive(orderId, items)
-                );
+                )
             }
 
         }

@@ -23,7 +23,7 @@ class OrderRepositoryImpl : OrderRepository {
             tableName = TABLE_NAME
         }
 
-        val returnedItem = client.getItem(request);
+        val returnedItem = client.getItem(request)
 
         return returnedItem.item
     }

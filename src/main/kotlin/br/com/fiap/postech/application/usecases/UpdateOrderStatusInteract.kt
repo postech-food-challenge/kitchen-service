@@ -18,7 +18,7 @@ class UpdateOrderStatusInteract(private val orderGateway: OrderGateway) {
                 status == OrderStatus.READY -> {
                     orderGateway.delete(id)
                     sendPatchRequest(id) // TODO: NÃO ESTÁ RESPEITANDO CLEAN ARCH. REFATORAR
-                    return it.withUpdatedStatus(status);
+                    return it.withUpdatedStatus(status)
                 }
 
                 else -> {
@@ -30,7 +30,7 @@ class UpdateOrderStatusInteract(private val orderGateway: OrderGateway) {
 
     suspend fun sendPatchRequest(id: Long) {
         val c = HttpClient(CIO)
-        c.patch("http://localhost:8080/order/end/10") {
+        c.patch("http://localhost:8080/order/end/$id") { // TODO: ARRUMAR ISSO.
         }
     }
 }

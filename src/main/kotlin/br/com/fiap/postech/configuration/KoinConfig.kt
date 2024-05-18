@@ -5,8 +5,6 @@ import br.com.fiap.postech.application.usecases.StartOrderInteract
 import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
 import br.com.fiap.postech.infraestructure.gateways.OrderGatewayImpl
 import br.com.fiap.postech.infraestructure.persistence.OrderRepositoryImpl
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
 import io.ktor.server.application.*
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
