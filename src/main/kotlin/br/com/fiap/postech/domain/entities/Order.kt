@@ -6,13 +6,13 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 data class Order(
-    val id: Long,
+    val id: UUID,
     val items: List<OrderItem>,
     var status: OrderStatus,
     val createdAt: LocalDateTime = LocalDateTime.now(),
 ) {
 
-    constructor(id: Long, items: List<OrderItem>): this(id, items, OrderStatus.RECEIVED, LocalDateTime.now()) { }
+    constructor(id: UUID, items: List<OrderItem>): this(id, items, OrderStatus.RECEIVED, LocalDateTime.now()) { }
 
     fun withUpdatedStatus(newStatus: OrderStatus): Order {
         return this.copy(status = newStatus)
@@ -22,7 +22,7 @@ data class Order(
         fun fromMap(map: Map<String, AttributeValue>): Order {
             val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
-            val id = map["id"]?.asN()?.toLong()
+            val id = map["id"]?.asS()
             val items = map["items"]?.asL()?.map {
                 item -> OrderItem.fromMap(item.asM())
             } ?: Collections.emptyList()
@@ -30,7 +30,7 @@ data class Order(
             val createdAt = LocalDateTime.parse(map["createdAt"]?.asS(), formatter)
 
             return Order(
-                id = id!!,
+                id = UUID.fromString(id),
                 items = items,
                 status = status,
                 createdAt = createdAt
@@ -40,7 +40,7 @@ data class Order(
         fun toMap(order: Order): Map<String, AttributeValue> {
             val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
             return mapOf(
-                "id" to (order.id.let { AttributeValue.N(it.toString()) }),
+                "id" to (order.id.let { AttributeValue.S(it.toString()) }),
                 "items" to AttributeValue.L(order.items.map { AttributeValue.M (OrderItem.toMap(it))}),
                 "status" to AttributeValue.S(order.status.name),
                 "createdAt" to AttributeValue.S(order.createdAt.format(formatter))

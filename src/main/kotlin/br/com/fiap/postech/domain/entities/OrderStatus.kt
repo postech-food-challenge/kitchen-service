@@ -5,7 +5,7 @@ import br.com.fiap.postech.domain.exceptions.InvalidParameterException
 enum class OrderStatus {
     RECEIVED,
     IN_PREPARATION,
-    READY,
+    COMPLETED,
     CANCELED;
 
     companion object {

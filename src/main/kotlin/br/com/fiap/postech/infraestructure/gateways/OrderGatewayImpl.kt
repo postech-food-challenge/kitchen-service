@@ -8,7 +8,7 @@ import br.com.fiap.postech.infraestructure.persistence.OrderRepository
 import java.util.*
 
 class OrderGatewayImpl (private val orderRepository: OrderRepository) : OrderGateway {
-    override suspend fun findById(id: Long): Order? {
+    override suspend fun findById(id: UUID): Order? {
         orderRepository.findById(id)?.let {
             return Order.fromMap(it)
         }
@@ -35,13 +35,13 @@ class OrderGatewayImpl (private val orderRepository: OrderRepository) : OrderGat
             .toList()
     }
 
-    override suspend fun updateOrderStatus(id: Long, newStatus: String): Order {
+    override suspend fun updateOrderStatus(id: UUID, newStatus: String): Order {
         val document = orderRepository.update(id, newStatus)
 
         return Order.fromMap(document)
     }
 
-    override suspend fun create(id: Long, items: List<OrderItem>): Order? {
+    override suspend fun create(id: UUID, items: List<OrderItem>): Order? {
         val order = Order(
             id = id,
             items = items
@@ -54,7 +54,7 @@ class OrderGatewayImpl (private val orderRepository: OrderRepository) : OrderGat
         return null
     }
 
-    override suspend fun delete(id: Long) {
+    override suspend fun delete(id: UUID) {
         orderRepository.delete(id)
     }
 }

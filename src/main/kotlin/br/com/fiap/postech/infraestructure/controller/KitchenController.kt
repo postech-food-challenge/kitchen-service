@@ -10,12 +10,13 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.koin.ktor.ext.inject
+import java.util.*
 
 fun Route.startOrderRoute() {
     val startOrderInteract by inject<StartOrderInteract>()
 
     post("/v1/kitchen/start/{id}") {
-        val orderId = call.parameters["id"]?.toLongOrNull()
+        val orderId = call.parameters["id"]
 
         val items = call.receive<List<OrderItem>>()
 
@@ -26,7 +27,7 @@ fun Route.startOrderRoute() {
 
         call.respond(
             HttpStatusCode.OK,
-            startOrderInteract.receive(orderId, items)
+            startOrderInteract.receive(UUID.fromString(orderId), items)
         )
     }
 }
@@ -35,9 +36,10 @@ fun Route.updateOrderStatusRoute() {
     val updateOrderStatusInteract by inject<UpdateOrderStatusInteract>()
 
     patch("/v1/kitchen/{id}") {
-        val orderId = call.parameters["id"]?.toLongOrNull()
-
-        if (orderId == null) {
+        var orderId: UUID? = null
+        try {
+            orderId = UUID.fromString(call.parameters["id"])
+        } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest, "Invalid ID")
             return@patch
         }
@@ -48,6 +50,8 @@ fun Route.updateOrderStatusRoute() {
             HttpStatusCode.OK,
             updateOrderStatusInteract.updateOrderStatus(orderId, bodyDto.status)
         )
+
+
     }
 }
 

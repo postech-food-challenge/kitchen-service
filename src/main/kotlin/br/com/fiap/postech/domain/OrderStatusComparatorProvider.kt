@@ -13,7 +13,7 @@ object OrderStatusComparatorProvider {
 
             private fun statusPriority(status: OrderStatus): Int {
                 return when (status) {
-                    OrderStatus.READY -> 1
+                    OrderStatus.COMPLETED -> 1
                     OrderStatus.IN_PREPARATION -> 2
                     OrderStatus.RECEIVED -> 3
                     else -> 4

@@ -5,7 +5,6 @@ import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderStatus
 
 class ListOrdersInteract(private val orderGateway: OrderGateway) {
-
     suspend fun listOrders(status: String?): List<Order> {
         return when {
             status.isNullOrEmpty() ->

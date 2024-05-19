@@ -1,27 +1,48 @@
 package steps
 
+import br.com.fiap.postech.domain.entities.Order
+import br.com.fiap.postech.domain.entities.OrderItem
+import br.com.fiap.postech.domain.entities.OrderStatus
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
 import io.restassured.RestAssured.given
 import io.restassured.response.Response
 import org.json.JSONObject
+import java.util.*
 import kotlin.test.assertTrue
 
 class UpdateOrderStatusSteps {
 
-    private var currentOrderId = 0
+    private var currentOrderId = ""
+    private var createdOrderId: UUID? = null
     private lateinit var currentStatusOnRequest: String
     private lateinit var response: Response
 
-    @Given("I'm trying to update the status of an order with id = {int}")
-    fun a(id: Int) {
+    @Given("I'm trying to update the status of an order with id = {word}")
+    fun im_trying_to_update_the_status_of_an_order_with_id(id: String) {
         currentOrderId = id
+    }
+
+    @Given("I created an order and I'm trying to update it's status")
+    fun i_created_an_order_and_im_trying_to_update_the_status_of_an_order_with_id() {
+        createdOrderId = UUID.randomUUID();
+        currentOrderId = createdOrderId.toString()
+
+        val item = OrderItem(
+            "Test item",
+            quantity = 1,
+            toGo = true,
+            observations = "sem cebola"
+        )
+
+        given().body(listOf(item)).`when`().post("/start/$createdOrderId")
+
     }
 
     @When("I try to change it's status to {word}")
     fun i_try_to_change_its_status(status: String) {
-        val url = "/${currentOrderId}"
+        val url = "/$currentOrderId"
         val body = "{ \"status\": \"${status}\" }"
 
         currentStatusOnRequest = status
@@ -54,5 +75,10 @@ class UpdateOrderStatusSteps {
         val map = jsObject.toMap()
 
         assertTrue { map["status"]?.equals(expectedStatus) ?: false }
+    }
+
+    @Then("I should receive an error stating that the id I passed is invalid")
+    fun i_should_receive_an_error_stating_that_the_id_i_passes_is_invalid() {
+        assertTrue { response.body().asPrettyString().equals("Invalid ID") ?: false }
     }
 }

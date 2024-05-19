@@ -3,20 +3,21 @@ package br.com.fiap.postech.infraestructure.persistence
 import aws.sdk.kotlin.services.dynamodb.model.*
 import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderStatus
-import br.com.fiap.postech.infraestructure.aws.DynamoDBClientProvider
+import br.com.fiap.postech.infraestructure.aws.DynamoDbClientProvider
+import java.util.UUID
 
-class OrderRepositoryImpl : OrderRepository {
+class OrderRepositoryDynamoDbImpl(private val provider: DynamoDbClientProvider) : OrderRepository {
 
     companion object {
         const val TABLE_NAME = "orders"
         const val KEY_COLUMN_NAME = "id"
     }
 
-    override suspend fun findById(id: Long): Map<String, AttributeValue>? {
-        val client = DynamoDBClientProvider.getClient()
+    override suspend fun findById(id: UUID): Map<String, AttributeValue>? {
+        val client = provider.getClient()
 
         val keyToGet = mutableMapOf<String, AttributeValue>()
-        keyToGet[KEY_COLUMN_NAME] = AttributeValue.N(id.toString())
+        keyToGet[KEY_COLUMN_NAME] = AttributeValue.S(id.toString())
 
         val request = GetItemRequest {
             key = keyToGet
@@ -29,7 +30,7 @@ class OrderRepositoryImpl : OrderRepository {
     }
 
     override suspend fun findActiveOrdersSorted(): List<Map<String, AttributeValue>>? {
-        val client = DynamoDBClientProvider.getClient()
+        val client = provider.getClient()
 
         val aliases = mapOf("#s" to "status")
 
@@ -38,7 +39,7 @@ class OrderRepositoryImpl : OrderRepository {
             filterExpression = "#s <> :completed AND #s <> :canceled"
             expressionAttributeNames = aliases
             expressionAttributeValues = mapOf(
-                ":completed" to AttributeValue.S(OrderStatus.READY.name),
+                ":completed" to AttributeValue.S(OrderStatus.COMPLETED.name),
                 ":canceled" to AttributeValue.S(OrderStatus.CANCELED.name)
             )
         }
@@ -48,7 +49,7 @@ class OrderRepositoryImpl : OrderRepository {
     }
 
     override suspend fun findByStatus(status: String): List<Map<String, AttributeValue>>? {
-        val client = DynamoDBClientProvider.getClient()
+        val client = provider.getClient()
 
         val aliases = mapOf("#s" to "status")
 
@@ -63,11 +64,11 @@ class OrderRepositoryImpl : OrderRepository {
         return scanResponse.items
     }
 
-    override suspend fun update(id: Long, newStatus: String): Map<String, AttributeValue> {
-        val client = DynamoDBClientProvider.getClient()
+    override suspend fun update(id: UUID, newStatus: String): Map<String, AttributeValue> {
+        val client = provider.getClient()
 
         val itemKey = mutableMapOf<String, AttributeValue>()
-        itemKey[KEY_COLUMN_NAME] = AttributeValue.N(id.toString())
+        itemKey[KEY_COLUMN_NAME] = AttributeValue.S(id.toString())
 
         val updatedValues = mutableMapOf<String, AttributeValueUpdate>()
         updatedValues["status"] = AttributeValueUpdate {
@@ -86,7 +87,7 @@ class OrderRepositoryImpl : OrderRepository {
     }
 
     override suspend fun create(order: Order): Map<String, AttributeValue>? {
-        val client = DynamoDBClientProvider.getClient()
+        val client = provider.getClient()
 
         val request = PutItemRequest {
             tableName = "orders"
@@ -98,11 +99,11 @@ class OrderRepositoryImpl : OrderRepository {
         return  findById(order.id)
     }
 
-    override suspend fun delete(id: Long) {
-        val client = DynamoDBClientProvider.getClient()
+    override suspend fun delete(id: UUID) {
+        val client = provider.getClient()
 
         val keyToGet = mutableMapOf<String, AttributeValue>()
-        keyToGet[KEY_COLUMN_NAME] = AttributeValue.N(id.toString())
+        keyToGet[KEY_COLUMN_NAME] = AttributeValue.S(id.toString())
 
         val request = DeleteItemRequest {
             tableName = TABLE_NAME
