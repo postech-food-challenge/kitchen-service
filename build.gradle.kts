@@ -5,6 +5,7 @@ val koin_version: String by project
 
 plugins {
     kotlin("jvm") version "1.9.23"
+    id("org.sonarqube") version "4.4.1.3373"
     id("io.ktor.plugin") version "2.3.9"
 }
 
@@ -16,6 +17,14 @@ application {
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "postech-food-challenge_kitchen-ms")
+        property("sonar.organization", "postech-food-challenge")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }
 
 repositories {

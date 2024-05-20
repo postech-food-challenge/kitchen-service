@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kitchen-configmap
+  namespace: tech-challenge
+  labels:
+    app: kitchen
+data:
+  AWS_ACCESS_KEY: "$AWS_ACCESS_KEY"
+  AWS_SECRET_KEY: "$AWS_SECRET_KEY"
+  AWS_SESSION_TOKEN: "$AWS_SESSION_TOKEN"
+  ORDER_PATCH_URL: "localhost:8080/v1/orders/"
