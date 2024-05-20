@@ -2,19 +2,17 @@ val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val koin_version: String by project
-val exposed_version: String by project
-val h2_version: String by project
 
 plugins {
     kotlin("jvm") version "1.9.23"
     id("io.ktor.plugin") version "2.3.9"
 }
 
-group = "com.example"
+group = "br.com.fiap.postech"
 version = "0.0.1"
 
 application {
-    mainClass.set("com.example.ApplicationKt")
+    mainClass.set("br.com.fiap.postech.ApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
@@ -34,15 +32,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
     //  KOIN
     implementation("io.insert-koin:koin-ktor:$koin_version")
-    //  EXPOSED
-    implementation("org.jetbrains.exposed:exposed-core:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-dao:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-jdbc:$exposed_version")
-    implementation("org.jetbrains.exposed:exposed-java-time:$exposed_version")
-    //  H2 DB
-    implementation("com.h2database:h2:$h2_version")
-    implementation("org.postgresql:postgresql:42.7.3")
-
     //  JACKSON
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.0")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.0")
@@ -56,5 +45,11 @@ dependencies {
     testImplementation("io.cucumber:cucumber-junit:7.17.0")
     testImplementation("org.assertj:assertj-core:3.25.3")
     testImplementation("io.rest-assured:rest-assured:5.4.0")
+    // DYNAMODB
+    implementation("aws.sdk.kotlin:dynamodb:1.2.15")
+    // REST CLIENT
+    implementation("io.ktor:ktor-client-core:2.3.11")
+    implementation("io.ktor:ktor-client-cio:2.3.11")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
 }

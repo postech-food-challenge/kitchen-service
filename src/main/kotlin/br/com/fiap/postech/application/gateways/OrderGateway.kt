@@ -1,13 +1,15 @@
-package com.example.application.gateways
+package br.com.fiap.postech.application.gateways
 
-import com.example.domain.entities.Order
-import com.example.infraestructure.persistence.entities.OrderEntity
+import br.com.fiap.postech.domain.entities.Order
+import br.com.fiap.postech.domain.entities.OrderItem
+import java.util.UUID
 
 interface OrderGateway {
 
-    fun findById(id: Long): Order?
-    fun findActiveOrdersSorted(): List<OrderEntity>
-    fun findByStatus(status: String): List<OrderEntity>
-    fun updateOrderStatus(id: Long, newStatus: String): Order?
-
+    suspend fun findById(id: UUID): Order?
+    suspend fun findActiveOrdersSorted(): List<Order>
+    suspend fun findByStatus(status: String): List<Order>
+    suspend fun updateOrderStatus(id: UUID, newStatus: String): Order
+    suspend fun create(id: UUID, items: List<OrderItem>): Order?
+    suspend fun delete(id: UUID)
 }

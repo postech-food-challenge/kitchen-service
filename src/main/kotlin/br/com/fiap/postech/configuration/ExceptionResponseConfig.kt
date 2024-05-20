@@ -1,8 +1,8 @@
-package com.example.configuration
+package br.com.fiap.postech.configuration
 
-import com.example.domain.exceptions.ExceptionResponse
-import com.example.domain.exceptions.InvalidParameterException
-import com.example.domain.exceptions.NoObjectFoundException
+import br.com.fiap.postech.domain.exceptions.ExceptionResponse
+import br.com.fiap.postech.domain.exceptions.InvalidParameterException
+import br.com.fiap.postech.domain.exceptions.NoObjectFoundException
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*

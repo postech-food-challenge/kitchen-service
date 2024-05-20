@@ -1,10 +1,14 @@
-package com.example.infraestructure.persistence
+package br.com.fiap.postech.infraestructure.persistence
 
-import com.example.infraestructure.persistence.entities.OrderEntity
+import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
+import br.com.fiap.postech.domain.entities.Order
+import java.util.UUID
 
 interface OrderRepository {
-    fun findById(id: Long): OrderEntity?
-    fun findActiveOrdersSorted(): List<OrderEntity>
-    fun findByStatus(status: String): List<OrderEntity>
-    fun update(id: Long, newStatus: String): OrderEntity?
+    suspend fun findById(id: UUID): Map<String, AttributeValue>?
+    suspend fun findActiveOrdersSorted(): List<Map<String, AttributeValue>>?
+    suspend fun findByStatus(status: String): List<Map<String, AttributeValue>>?
+    suspend fun update(id: UUID, newStatus: String): Map<String, AttributeValue>
+    suspend fun create(order: Order): Map<String, AttributeValue>?
+    suspend fun delete(id: UUID)
 }

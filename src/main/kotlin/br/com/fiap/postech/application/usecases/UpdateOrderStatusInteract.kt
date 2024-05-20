@@ -1,16 +1,29 @@
-package com.example.application.usecases
+package br.com.fiap.postech.application.usecases
 
-import com.example.application.gateways.OrderGateway
-import com.example.domain.entities.Order
-import com.example.domain.entities.OrderStatus
-import com.example.domain.exceptions.NoObjectFoundException
+import br.com.fiap.postech.application.gateways.OrderGateway
+import br.com.fiap.postech.domain.entities.Order
+import br.com.fiap.postech.domain.entities.OrderStatus
+import br.com.fiap.postech.domain.exceptions.NoObjectFoundException
+import java.util.UUID
 
-class UpdateOrderStatusInteract(private val orderGateway: OrderGateway) {
+class UpdateOrderStatusInteract(
+    private val orderGateway: OrderGateway,
+    private val sendPatchRequestInteract: SendPatchRequestInteract
+) {
 
-    fun updateOrderStatus(id: Long, newStatus: String): Order {
+    suspend fun updateOrderStatus(id: UUID, newStatus: String): Order {
         return orderGateway.findById(id)?.let {
-            OrderStatus.validateStatus(newStatus)
-            orderGateway.updateOrderStatus(id, newStatus)
-        }?: throw NoObjectFoundException("No order found for id = $id")
+            val status = OrderStatus.validateStatus(newStatus)
+
+            when {
+                status == OrderStatus.COMPLETED -> {
+                    orderGateway.delete(id)
+                    sendPatchRequestInteract.send(id, OrderStatus.COMPLETED)
+                    return it.withUpdatedStatus(status)
+                } else -> {
+                    return orderGateway.updateOrderStatus(id, newStatus)
+                }
+            }
+        } ?: throw NoObjectFoundException("No order found for id = $id")
     }
 }

@@ -1,31 +1,51 @@
-package com.example.domain.entities
+package br.com.fiap.postech.domain.entities
 
-import com.example.infraestructure.persistence.entities.OrderEntity
-import com.example.infraestructure.persistence.entities.OrderItemEntity
+import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
 import java.time.LocalDateTime
-import java.util.Collections
-import java.util.stream.Collectors
+import java.time.format.DateTimeFormatter
+import java.util.*
 
 data class Order(
-    val id: Long? = null,
-    val customerCpf: String? = null,
+    val id: UUID,
     val items: List<OrderItem>,
     var status: OrderStatus,
     val createdAt: LocalDateTime = LocalDateTime.now(),
-    val paymentValidated: Boolean? = null,
-    val price: Int? = null,
-    val qrData: String? = null,
-    val inStoreOrderId: String? = null
 ) {
+
+    constructor(id: UUID, items: List<OrderItem>): this(id, items, OrderStatus.RECEIVED, LocalDateTime.now()) { }
+
+    fun withUpdatedStatus(newStatus: OrderStatus): Order {
+        return this.copy(status = newStatus)
+    }
+
     companion object {
-        fun fromEntity(entity: OrderEntity): Order {
+        fun fromMap(map: Map<String, AttributeValue>): Order {
+            val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+            val id = map["id"]?.asS()
+            val items = map["items"]?.asL()?.map {
+                item -> OrderItem.fromMap(item.asM())
+            } ?: Collections.emptyList()
+            val status = OrderStatus.valueOf(map["status"]?.asS() ?: "PENDING")
+            val createdAt = LocalDateTime.parse(map["createdAt"]?.asS(), formatter)
+
             return Order(
-                entity.id.value,
-                entity.customerCpf,
-                entity.items?.map { OrderItem.fromEntity(it) } ?: Collections.emptyList(),
-                OrderStatus.valueOf(entity.status),
-                entity.createdAt
+                id = UUID.fromString(id),
+                items = items,
+                status = status,
+                createdAt = createdAt
             )
         }
+
+        fun toMap(order: Order): Map<String, AttributeValue> {
+            val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+            return mapOf(
+                "id" to (order.id.let { AttributeValue.S(it.toString()) }),
+                "items" to AttributeValue.L(order.items.map { AttributeValue.M (OrderItem.toMap(it))}),
+                "status" to AttributeValue.S(order.status.name),
+                "createdAt" to AttributeValue.S(order.createdAt.format(formatter))
+            )
+        }
+
     }
 }

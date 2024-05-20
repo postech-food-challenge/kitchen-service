@@ -1,30 +1,60 @@
-package com.example.infraestructure.gateways
+package br.com.fiap.postech.infraestructure.gateways
 
-import com.example.application.gateways.OrderGateway
-import com.example.domain.entities.Order
-import com.example.infraestructure.persistence.OrderRepository
-import com.example.infraestructure.persistence.entities.OrderEntity
+import br.com.fiap.postech.application.gateways.OrderGateway
+import br.com.fiap.postech.domain.OrderStatusComparatorProvider
+import br.com.fiap.postech.domain.entities.Order
+import br.com.fiap.postech.domain.entities.OrderItem
+import br.com.fiap.postech.infraestructure.persistence.OrderRepository
+import java.util.*
 
 class OrderGatewayImpl (private val orderRepository: OrderRepository) : OrderGateway {
-    override fun findById(id: Long): Order? {
-        val orderEntity = orderRepository.findById(id)
-
-        return orderEntity?.let {
-           Order.fromEntity(it)
+    override suspend fun findById(id: UUID): Order? {
+        orderRepository.findById(id)?.let {
+            return Order.fromMap(it)
         }
+
+        return null
     }
 
-    override fun findActiveOrdersSorted(): List<OrderEntity> {
-        return orderRepository.findActiveOrdersSorted()
+    override suspend fun findActiveOrdersSorted(): List<Order> {
+        val lisfOfDocuments =
+            orderRepository.findActiveOrdersSorted() ?: Collections.emptyList()
+
+        return lisfOfDocuments.stream().map { Order.fromMap(it) }
+            .sorted(OrderStatusComparatorProvider.getComparator())
+            .sorted(Comparator.comparing { it.createdAt })
+            .toList()
     }
 
-    override fun findByStatus(status: String): List<OrderEntity> {
-        return orderRepository.findByStatus(status)
+    override suspend fun findByStatus(status: String): List<Order> {
+        val lisfOfDocuments =
+            orderRepository.findByStatus(status) ?: Collections.emptyList()
+
+        return lisfOfDocuments.stream().map { Order.fromMap(it) }
+            .sorted(Comparator.comparing { it.createdAt })
+            .toList()
     }
 
-    override fun updateOrderStatus(id: Long, newStatus: String): Order? {
-        return orderRepository.update(id, newStatus)?.let {
-            Order.fromEntity(it)
+    override suspend fun updateOrderStatus(id: UUID, newStatus: String): Order {
+        val document = orderRepository.update(id, newStatus)
+
+        return Order.fromMap(document)
+    }
+
+    override suspend fun create(id: UUID, items: List<OrderItem>): Order? {
+        val order = Order(
+            id = id,
+            items = items
+        )
+
+        orderRepository.create(order)?.let {
+            return Order.fromMap(it)
         }
+
+        return null
+    }
+
+    override suspend fun delete(id: UUID) {
+        orderRepository.delete(id)
     }
 }

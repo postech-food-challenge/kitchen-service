@@ -1,11 +1,10 @@
-package com.example.domain.entities
+package br.com.fiap.postech.domain.entities
 
-import com.example.domain.exceptions.InvalidParameterException
+import br.com.fiap.postech.domain.exceptions.InvalidParameterException
 
 enum class OrderStatus {
     RECEIVED,
     IN_PREPARATION,
-    READY,
     COMPLETED,
     CANCELED;
 
