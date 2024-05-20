@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm") version "1.9.23"
     id("org.sonarqube") version "4.4.1.3373"
     id("io.ktor.plugin") version "2.3.9"
+    id("jacoco")
 }
 
 group = "br.com.fiap.postech"
@@ -61,4 +62,32 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:2.3.11")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude(
+                    "br/com/fiap/postech/domain/**",
+                    "br/com/fiap/postech/configuration/**",
+                    "br/com/fiap/postech/infraestucture/**"
+                )
+            }
+        })
+    )
 }
