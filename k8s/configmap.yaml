@@ -9,4 +9,4 @@ data:
   AWS_ACCESS_KEY: "$AWS_ACCESS_KEY"
   AWS_SECRET_KEY: "$AWS_SECRET_KEY"
   AWS_SESSION_TOKEN: "$AWS_SESSION_TOKEN"
-  ORDER_PATCH_URL: "localhost:8080/v1/orders/"
+  ORDER_PATCH_URL: "http://tech-challenge.order.cluster.local:8080/v1/orders"
