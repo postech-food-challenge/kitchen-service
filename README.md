@@ -1,4 +1,4 @@
-# Food Challenge
+# Kitchen-ms
 
 ## Prerequisites
 
