@@ -1,6 +1,6 @@
 package steps
 
-import br.com.fiap.postech.domain.entities.OrderItem
+import br.com.fiap.postech.infraestructure.controller.StartOrderItemRequest
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
@@ -27,15 +27,15 @@ class UpdateOrderStatusSteps {
         createdOrderId = UUID.randomUUID();
         currentOrderId = createdOrderId.toString()
 
-        val item = OrderItem(
-            "Test item",
+        val item = StartOrderItemRequest(
+            1L,
             quantity = 1,
             toGo = true,
-            observations = "sem cebola"
+            observations = "sem cebola",
+            price = 22
         )
 
         given().body(listOf(item)).`when`().post("/start/$createdOrderId")
-
     }
 
     @When("I try to change it's status to {word}")

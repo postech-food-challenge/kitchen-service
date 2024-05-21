@@ -18,7 +18,7 @@ fun Route.startOrderRoute() {
     post("/v1/kitchen/start/{id}") {
         val orderId = call.parameters["id"]
 
-        val items = call.receive<List<OrderItem>>()
+        val items = call.receive<List<StartOrderItemRequest>>()
 
         if (orderId == null) {
             call.respond(HttpStatusCode.BadRequest, "Invalid ID")
@@ -36,7 +36,7 @@ fun Route.updateOrderStatusRoute() {
     val updateOrderStatusInteract by inject<UpdateOrderStatusInteract>()
 
     patch("/v1/kitchen/{id}") {
-        var orderId: UUID? = null
+        var orderId: UUID?
         try {
             orderId = UUID.fromString(call.parameters["id"])
         } catch (e: Exception) {
@@ -50,8 +50,6 @@ fun Route.updateOrderStatusRoute() {
             HttpStatusCode.OK,
             updateOrderStatusInteract.updateOrderStatus(orderId, bodyDto.status)
         )
-
-
     }
 }
 
