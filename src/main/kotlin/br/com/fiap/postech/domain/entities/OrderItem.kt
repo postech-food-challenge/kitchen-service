@@ -1,6 +1,7 @@
 package br.com.fiap.postech.domain.entities
 
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
+import br.com.fiap.postech.infraestructure.controller.StartOrderItemRequest
 
 data class OrderItem(
     val name: String,
@@ -9,6 +10,14 @@ data class OrderItem(
     val toGo: Boolean
 ) {
     companion object {
+        fun fromRequest(item: StartOrderItemRequest): OrderItem {
+            return OrderItem(
+                name = item.productId.toString(),
+                quantity = item.quantity,
+                observations = item.observations,
+                toGo = item.toGo
+            )
+        }
         fun fromMap(map: Map<String, AttributeValue>): OrderItem {
             return OrderItem(
                 name = map["name"]?.asS() ?: "",

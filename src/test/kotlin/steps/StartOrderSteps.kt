@@ -2,6 +2,7 @@ package steps
 
 import br.com.fiap.postech.domain.entities.OrderItem
 import br.com.fiap.postech.domain.entities.OrderStatus
+import br.com.fiap.postech.infraestructure.controller.StartOrderItemRequest
 import io.cucumber.java.en.Given
 import io.cucumber.java.en.Then
 import io.cucumber.java.en.When
@@ -24,11 +25,12 @@ class StartOrderSteps {
     fun i_receive_the_order_on_my_system() {
         val url = "/start/$id"
 
-        val item = OrderItem(
-            "X-tudo",
+        val item = StartOrderItemRequest(
+            1L,
             quantity = 1,
             toGo = true,
-            observations = "sem cebola"
+            observations = "sem cebola",
+            price = 10
         )
 
         response = given().body(listOf(item)).`when`().post(url)
