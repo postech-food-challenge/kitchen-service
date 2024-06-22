@@ -6,7 +6,7 @@ val mockkVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.9.23"
-    id("org.sonarqube") version "4.4.1.3373"
+//    id("org.sonarqube") version "4.4.1.3373"
     id("io.ktor.plugin") version "2.3.9"
     id("jacoco")
 }
@@ -21,13 +21,24 @@ application {
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
-sonar {
-    properties {
-        property("sonar.projectKey", "postech-food-challenge_kitchen-ms")
-        property("sonar.organization", "postech-food-challenge")
-        property("sonar.host.url", "https://sonarcloud.io")
-    }
-}
+//sonar {
+//    properties {
+//        property("sonar.gradle.skipCompile", "true")
+//        property("sonar.projectKey", "postech-food-challenge_kitchen-service")
+//        property("sonar.organization", "postech-food-challenge")
+//        property("sonar.host.url", "https://sonarcloud.io")
+//        property("sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacoco/test/jacocoTestReport.xml")
+//        property(
+//            "sonar.coverage.exclusions",
+//            """
+//                **/br/com/fiap/postech/Application.kt,
+//                **/br/com/fiap/postech/domain/**,
+//                **/br/com/fiap/postech/configuration/**,
+//                **/br/com/fiap/postech/infrastructure/**
+//            """.trimIndent()
+//        )
+//    }
+//}
 
 repositories {
     mavenCentral()
