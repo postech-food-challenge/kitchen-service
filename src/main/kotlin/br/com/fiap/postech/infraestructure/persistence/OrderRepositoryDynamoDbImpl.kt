@@ -3,10 +3,10 @@ package br.com.fiap.postech.infraestructure.persistence
 import aws.sdk.kotlin.services.dynamodb.model.*
 import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderStatus
-import br.com.fiap.postech.infraestructure.aws.DynamoDbClientProvider
-import java.util.UUID
+import br.com.fiap.postech.infraestructure.aws.IDynamoDbClientProvider
+import java.util.*
 
-class OrderRepositoryDynamoDbImpl(private val provider: DynamoDbClientProvider) : OrderRepository {
+class OrderRepositoryDynamoDbImpl(private val provider: IDynamoDbClientProvider) : OrderRepository {
 
     companion object {
         const val TABLE_NAME = "orders"
