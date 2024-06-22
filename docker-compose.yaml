@@ -8,3 +8,35 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    networks:
+      - dynamodb-local-net
+
+  dynamodb-local:
+    image: amazon/dynamodb-local
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb"
+    networks:
+      - dynamodb-local-net
+
+#  aws-cli:
+#    image: amazon/aws-cli
+#    depends_on:
+#      - dynamodb-local
+#    networks:
+#      - dynamodb-local-net
+#    environment:
+#      AWS_ACCESS_KEY_ID: MOCKED_KEY
+#      AWS_SECRET_ACCESS_KEY: MOCKED_SECRET
+#      REGION: us-east-1
+#    stdin_open: true
+#    tty: true
+#    command:
+#      configure set aws_access_key_id = $AWS_ACCESS_KEY_ID;
+#      configure set aws_secret_access_key = $AWS_SECRET_ACCESS_KEY;
+#      configure set region = $REGION;
+#      dynamodb create-table --table-name orders --attribute-definitions AttributeName=id,AttributeType=S --key-schema AttributeName=id,KeyType=HASH --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 --table-class STANDARD --endpoint-url http://dynamodb-local:8000
+
+networks:
+  dynamodb-local-net:
+    driver: bridge
