@@ -3,7 +3,6 @@ package br.com.fiap.postech.infraestructure.controller
 import br.com.fiap.postech.application.usecases.ListOrdersInteract
 import br.com.fiap.postech.application.usecases.StartOrderInteract
 import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
-import br.com.fiap.postech.domain.entities.OrderItem
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*

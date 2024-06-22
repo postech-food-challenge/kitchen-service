@@ -2,7 +2,7 @@ package br.com.fiap.postech.infraestructure.persistence
 
 import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
 import br.com.fiap.postech.domain.entities.Order
-import java.util.UUID
+import java.util.*
 
 interface OrderRepository {
     suspend fun findById(id: UUID): Map<String, AttributeValue>?

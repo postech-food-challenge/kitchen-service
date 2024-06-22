@@ -2,6 +2,7 @@ val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val koin_version: String by project
+val mockkVersion: String by project
 
 plugins {
     kotlin("jvm") version "1.9.23"
@@ -48,15 +49,20 @@ dependencies {
     implementation("org.json:json:20240303")
     //  LOG
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    testImplementation("io.ktor:ktor-server-tests-jvm")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     // COCUMBER
     implementation("io.cucumber:cucumber-java:7.17.0")
     testImplementation("io.cucumber:cucumber-junit:7.17.0")
     testImplementation("org.assertj:assertj-core:3.25.3")
-    testImplementation("io.rest-assured:rest-assured:5.4.0")
+    // TEST
+    testImplementation("io.mockk:mockk:${mockkVersion}")
+    testImplementation("io.ktor:ktor-server-tests-jvm")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("io.insert-koin:koin-test:3.2.0")
     // DYNAMODB
-    implementation("aws.sdk.kotlin:dynamodb:1.2.15")
+    implementation("aws.sdk.kotlin:dynamodb:1.2.38")
     // REST CLIENT
     implementation("io.ktor:ktor-client-core:2.3.11")
     implementation("io.ktor:ktor-client-cio:2.3.11")

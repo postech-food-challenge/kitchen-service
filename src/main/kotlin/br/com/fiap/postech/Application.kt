@@ -16,3 +16,9 @@ fun Application.module() {
     configureKoin(environment.config)
     configureExceptionsResponse()
 }
+
+fun Application.moduleTst() {
+    configureSerialization()
+    configureRouting()
+    configureExceptionsResponse()
+}
