@@ -23,7 +23,7 @@ application {
 
 sonar {
     properties {
-        property("sonar.projectKey", "postech-food-challenge_kitchen-ms")
+        property("sonar.projectKey", "postech-food-challenge_kitchen-service")
         property("sonar.organization", "postech-food-challenge")
         property("sonar.host.url", "https://sonarcloud.io")
     }
