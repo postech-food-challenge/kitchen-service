@@ -62,7 +62,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     testImplementation("io.insert-koin:koin-test:3.2.0")
     // DYNAMODB
-    implementation("aws.sdk.kotlin:dynamodb:1.2.38")
+    implementation("software.amazon.awssdk:dynamodb:2.17.89")
     // REST CLIENT
     implementation("io.ktor:ktor-client-core:2.3.11")
     implementation("io.ktor:ktor-client-cio:2.3.11")

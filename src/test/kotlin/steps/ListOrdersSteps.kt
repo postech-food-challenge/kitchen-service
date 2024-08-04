@@ -1,6 +1,5 @@
 package steps
 
-import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
 import br.com.fiap.postech.application.gateways.OrderGateway
 import br.com.fiap.postech.application.usecases.ListOrdersInteract
 import br.com.fiap.postech.application.usecases.SendPatchRequestInteract
@@ -28,23 +27,26 @@ import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.test.KoinTest
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.assertTrue
 
-class ListOrdersSteps: KoinTest {
+class ListOrdersSteps : KoinTest {
     private lateinit var response: HttpResponse
     private val orderRepository = mockk<OrderRepository>(relaxed = false)
     private lateinit var mockedDynamoDbResponse: List<Map<String, AttributeValue>>
 
     @Given("I have a few orders on my database")
     fun i_have_a_few_orders_on_my_database() {
-        mockedDynamoDbResponse = listOf(mapOf(
-            "id" to (AttributeValue.S(UUID.randomUUID().toString())),
-            "items" to AttributeValue.L(listOf()),
-            "status" to AttributeValue.S("RECEIVED"),
-            "createdAt" to AttributeValue.S(LocalDateTime.now().toString())
-        ))
+        mockedDynamoDbResponse = listOf(
+            mapOf(
+                "id" to (AttributeValue.builder().s(UUID.randomUUID().toString()).build()),
+                "items" to AttributeValue.builder().l(listOf()).build(),
+                "status" to AttributeValue.builder().s("RECEIVED").build(),
+                "createdAt" to AttributeValue.builder().s(LocalDateTime.now().toString()).build()
+            )
+        )
 
         assertTrue { mockedDynamoDbResponse.isNotEmpty() }
     }

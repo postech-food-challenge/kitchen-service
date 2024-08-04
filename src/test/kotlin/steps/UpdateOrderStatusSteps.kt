@@ -1,6 +1,5 @@
 package steps
 
-import aws.sdk.kotlin.services.dynamodb.model.AttributeValue
 import br.com.fiap.postech.application.gateways.OrderGateway
 import br.com.fiap.postech.application.usecases.ListOrdersInteract
 import br.com.fiap.postech.application.usecases.SendPatchRequestInteract
@@ -28,6 +27,7 @@ import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import java.util.*
 import kotlin.test.assertTrue
 
@@ -35,8 +35,8 @@ class UpdateOrderStatusSteps {
     private lateinit var response: HttpResponse
     private val orderRepository = mockk<OrderRepository>(relaxed = false)
     private val sendPatchRequestInteract = mockk<SendPatchRequestInteract>(relaxed = false)
-    private lateinit var mockedOrder : Order
-    private var expectedReturn : Map<String, AttributeValue>? = null
+    private lateinit var mockedOrder: Order
+    private var expectedReturn: Map<String, AttributeValue>? = null
 
     @Given("I'm trying to update the status of a nonexistent order with id = {word}")
     fun im_trying_to_update_the_status_of_a_nonexisting_order_with_id(id: String) {
@@ -96,7 +96,12 @@ class UpdateOrderStatusSteps {
                 }
 
                 coEvery { orderRepository.findById(mockedOrder.id) } returns expectedReturn
-                coEvery { orderRepository.update(mockedOrder.id, status) } returns Order.toMap(mockedOrder.withUpdatedStatus(OrderStatus.valueOf(status)))
+                coEvery {
+                    orderRepository.update(
+                        mockedOrder.id,
+                        status
+                    )
+                } returns Order.toMap(mockedOrder.withUpdatedStatus(OrderStatus.valueOf(status)))
                 coJustRun { orderRepository.delete(mockedOrder.id) }
                 coJustRun { sendPatchRequestInteract.send(mockedOrder.id, OrderStatus.COMPLETED) }
                 response = client.patch("/v1/kitchen/${mockedOrder.id}") {
