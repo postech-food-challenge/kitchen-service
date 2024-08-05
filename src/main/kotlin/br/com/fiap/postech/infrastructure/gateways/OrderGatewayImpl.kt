@@ -1,10 +1,10 @@
-package br.com.fiap.postech.infraestructure.gateways
+package br.com.fiap.postech.infrastructure.gateways
 
 import br.com.fiap.postech.application.gateways.OrderGateway
 import br.com.fiap.postech.domain.OrderStatusComparatorProvider
 import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderItem
-import br.com.fiap.postech.infraestructure.persistence.OrderRepository
+import br.com.fiap.postech.infrastructure.persistence.OrderRepository
 import java.util.*
 
 class OrderGatewayImpl (private val orderRepository: OrderRepository) : OrderGateway {

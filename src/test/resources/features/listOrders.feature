@@ -2,7 +2,7 @@ Feature: List orders feature
   Scenario: I'm trying to list orders on an nonexistent status
     Given I have a few orders on my database
     When I try to find orders on status = NON_EXISTENT
-    Then The system should warn me that the status is invalid2
+    Then The system should warn me that the status NON_EXISTENT is invalid
 
   Scenario: I'm trying to list all active orders
     Given I have a few orders on my database

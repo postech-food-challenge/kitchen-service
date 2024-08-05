@@ -1,9 +1,8 @@
-package br.com.fiap.postech.infraestructure.controller
+package br.com.fiap.postech.infrastructure.controller
 
 import br.com.fiap.postech.application.usecases.ListOrdersInteract
 import br.com.fiap.postech.application.usecases.StartOrderInteract
 import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
-import br.com.fiap.postech.domain.entities.OrderItem
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -36,7 +35,7 @@ fun Route.updateOrderStatusRoute() {
     val updateOrderStatusInteract by inject<UpdateOrderStatusInteract>()
 
     patch("/v1/kitchen/{id}") {
-        var orderId: UUID?
+        val orderId: UUID?
         try {
             orderId = UUID.fromString(call.parameters["id"])
         } catch (e: Exception) {

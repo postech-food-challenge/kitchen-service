@@ -1,1 +1,1 @@
-rootProject.name = "kitchen-ms"
+rootProject.name = "kitchen-service"

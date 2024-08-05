@@ -2,7 +2,7 @@ package br.com.fiap.postech.application.gateways
 
 import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderItem
-import java.util.UUID
+import java.util.*
 
 interface OrderGateway {
 

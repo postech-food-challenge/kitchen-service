@@ -4,7 +4,7 @@ import br.com.fiap.postech.application.gateways.OrderGateway
 import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderStatus
 import br.com.fiap.postech.domain.exceptions.NoObjectFoundException
-import java.util.UUID
+import java.util.*
 
 class UpdateOrderStatusInteract(
     private val orderGateway: OrderGateway,

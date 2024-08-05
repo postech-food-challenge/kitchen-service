@@ -1,4 +1,4 @@
-# Kitchen-ms
+# kitchen-service
 
 ## Test Coverage
 
