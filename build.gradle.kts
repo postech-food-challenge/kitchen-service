@@ -102,7 +102,7 @@ tasks.jacocoTestReport {
                 exclude(
                     "br/com/fiap/postech/domain/**",
                     "br/com/fiap/postech/configuration/**",
-                    "br/com/fiap/postech/infraestucture/**"
+                    "br/com/fiap/postech/infrastructure/**"
                 )
             }
         })

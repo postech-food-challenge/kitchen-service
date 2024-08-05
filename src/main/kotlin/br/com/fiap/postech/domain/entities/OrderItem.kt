@@ -1,6 +1,6 @@
 package br.com.fiap.postech.domain.entities
 
-import br.com.fiap.postech.infraestructure.controller.StartOrderItemRequest
+import br.com.fiap.postech.infrastructure.controller.StartOrderItemRequest
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
 data class OrderItem(

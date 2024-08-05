@@ -3,7 +3,7 @@ package br.com.fiap.postech.application.usecases
 import br.com.fiap.postech.application.gateways.OrderGateway
 import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderItem
-import br.com.fiap.postech.infraestructure.controller.StartOrderItemRequest
+import br.com.fiap.postech.infrastructure.controller.StartOrderItemRequest
 import java.util.*
 
 class StartOrderInteract(private val orderGateway: OrderGateway) {

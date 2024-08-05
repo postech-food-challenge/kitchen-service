@@ -8,9 +8,9 @@ import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
 import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderItem
 import br.com.fiap.postech.domain.entities.OrderStatus
-import br.com.fiap.postech.infraestructure.controller.StartOrderItemRequest
-import br.com.fiap.postech.infraestructure.gateways.OrderGatewayImpl
-import br.com.fiap.postech.infraestructure.persistence.OrderRepository
+import br.com.fiap.postech.infrastructure.controller.StartOrderItemRequest
+import br.com.fiap.postech.infrastructure.gateways.OrderGatewayImpl
+import br.com.fiap.postech.infrastructure.persistence.OrderRepository
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

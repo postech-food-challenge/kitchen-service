@@ -5,9 +5,9 @@ import br.com.fiap.postech.application.usecases.ListOrdersInteract
 import br.com.fiap.postech.application.usecases.SendPatchRequestInteract
 import br.com.fiap.postech.application.usecases.StartOrderInteract
 import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
-import br.com.fiap.postech.infraestructure.gateways.OrderGatewayImpl
-import br.com.fiap.postech.infraestructure.persistence.OrderRepository
-import br.com.fiap.postech.infraestructure.persistence.OrderRepositoryDynamoDbImpl
+import br.com.fiap.postech.infrastructure.gateways.OrderGatewayImpl
+import br.com.fiap.postech.infrastructure.persistence.OrderRepository
+import br.com.fiap.postech.infrastructure.persistence.OrderRepositoryDynamoDbImpl
 import io.cucumber.java.After
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given

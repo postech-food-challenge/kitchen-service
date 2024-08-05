@@ -1,4 +1,4 @@
-package br.com.fiap.postech.infraestructure.aws
+package br.com.fiap.postech.infrastructure.aws
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 

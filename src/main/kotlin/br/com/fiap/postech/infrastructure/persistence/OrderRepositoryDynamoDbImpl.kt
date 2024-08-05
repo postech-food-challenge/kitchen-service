@@ -1,9 +1,9 @@
-package br.com.fiap.postech.infraestructure.persistence
+package br.com.fiap.postech.infrastructure.persistence
 
 
 import br.com.fiap.postech.domain.entities.Order
 import br.com.fiap.postech.domain.entities.OrderStatus
-import br.com.fiap.postech.infraestructure.aws.IDynamoDbClientProvider
+import br.com.fiap.postech.infrastructure.aws.IDynamoDbClientProvider
 import software.amazon.awssdk.services.dynamodb.model.*
 import java.util.*
 
