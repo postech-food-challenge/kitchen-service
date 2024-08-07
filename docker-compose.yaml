@@ -2,6 +2,9 @@ version: "3.6"
 
 services:
   app:
+    depends_on:
+      - dynamodb-local
+      - localstack
     container_name: kitchen-service
     build:
       context: .
@@ -15,3 +18,13 @@ services:
     ports:
       - "8000:8000"
     command: "-jar DynamoDBLocal.jar -inMemory -sharedDb"
+
+  localstack:
+    image: "localstack/localstack"
+    ports:
+      - "4566:4566"
+    volumes:
+      - "./localstack/init-queues.sh:/etc/localstack/init/ready.d/init-aws.sh"
+    environment:
+      SERVICES: sqs
+      AWS_DEFAULT_REGION: us-east-1

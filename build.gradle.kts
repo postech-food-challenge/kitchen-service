@@ -60,6 +60,9 @@ dependencies {
     implementation("org.json:json:20240303")
     //  LOG
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    // AWS SDK
+    implementation("software.amazon.awssdk:dynamodb:2.17.89")
+    implementation("software.amazon.awssdk:sqs:2.17.89")
     // COCUMBER
     implementation("io.cucumber:cucumber-java:7.17.0")
     testImplementation("io.cucumber:cucumber-junit:7.17.0")
@@ -72,13 +75,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     testImplementation("io.insert-koin:koin-test:3.2.0")
-    // DYNAMODB
-    implementation("software.amazon.awssdk:dynamodb:2.17.89")
     // REST CLIENT
     implementation("io.ktor:ktor-client-core:2.3.11")
     implementation("io.ktor:ktor-client-cio:2.3.11")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-
 }
 
 jacoco {
