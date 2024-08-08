@@ -6,5 +6,5 @@ RUN gradle build
 
 FROM eclipse-temurin:21-jdk
 WORKDIR /app
-COPY --from=build /app/build/libs/*.jar /app/kitchen.jar
-ENTRYPOINT ["java", "-jar", "/app/kitchen.jar"]
+COPY --from=build /app/build/libs/*.jar /app/app.jar
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

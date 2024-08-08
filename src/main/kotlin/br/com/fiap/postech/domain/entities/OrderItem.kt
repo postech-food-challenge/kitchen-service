@@ -1,8 +1,10 @@
 package br.com.fiap.postech.domain.entities
 
 import br.com.fiap.postech.infrastructure.controller.StartOrderItemRequest
+import kotlinx.serialization.Serializable
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
+@Serializable
 data class OrderItem(
     val name: String,
     val quantity: Int,

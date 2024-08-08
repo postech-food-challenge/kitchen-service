@@ -9,6 +9,7 @@ plugins {
     id("org.sonarqube") version "4.4.1.3373"
     id("io.ktor.plugin") version "2.3.9"
     id("jacoco")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
 }
 
 group = "br.com.fiap.postech"
@@ -49,6 +50,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-status-pages:$ktor_version")
     implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
@@ -60,6 +62,9 @@ dependencies {
     implementation("org.json:json:20240303")
     //  LOG
     implementation("ch.qos.logback:logback-classic:$logback_version")
+    // AWS SDK
+    implementation("software.amazon.awssdk:dynamodb:2.17.89")
+    implementation("software.amazon.awssdk:sqs:2.17.89")
     // COCUMBER
     implementation("io.cucumber:cucumber-java:7.17.0")
     testImplementation("io.cucumber:cucumber-junit:7.17.0")
@@ -72,13 +77,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
     testImplementation("io.insert-koin:koin-test:3.2.0")
-    // DYNAMODB
-    implementation("software.amazon.awssdk:dynamodb:2.17.89")
     // REST CLIENT
     implementation("io.ktor:ktor-client-core:2.3.11")
     implementation("io.ktor:ktor-client-cio:2.3.11")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
-
 }
 
 jacoco {
@@ -86,6 +88,7 @@ jacoco {
 }
 
 tasks.test {
+    useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport)
 }
 

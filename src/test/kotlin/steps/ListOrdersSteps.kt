@@ -1,13 +1,15 @@
 package steps
 
+import br.com.fiap.postech.application.gateways.MessageProducerGateway
 import br.com.fiap.postech.application.gateways.OrderGateway
 import br.com.fiap.postech.application.usecases.ListOrdersInteract
-import br.com.fiap.postech.application.usecases.SendPatchRequestInteract
 import br.com.fiap.postech.application.usecases.StartOrderInteract
 import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
+import br.com.fiap.postech.configuration.AwsConfiguration
+import br.com.fiap.postech.infrastructure.aws.MessageProducerGatewayImpl
 import br.com.fiap.postech.infrastructure.gateways.OrderGatewayImpl
 import br.com.fiap.postech.infrastructure.persistence.OrderRepository
-import br.com.fiap.postech.infrastructure.persistence.OrderRepositoryDynamoDbImpl
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import io.cucumber.java.After
 import io.cucumber.java.Before
 import io.cucumber.java.en.Given
@@ -18,24 +20,39 @@ import io.ktor.client.statement.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
+import io.mockk.MockKAnnotations
 import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.junit5.MockKExtension
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.json.JSONArray
+import org.junit.jupiter.api.extension.ExtendWith
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 import org.koin.test.KoinTest
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.sqs.SqsClient
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.assertTrue
 
+@ExtendWith(MockKExtension::class)
 class ListOrdersSteps : KoinTest {
     private lateinit var response: HttpResponse
-    private val orderRepository = mockk<OrderRepository>(relaxed = false)
+    private val orderRepository = mockk<OrderRepository>(relaxed = true)
     private lateinit var mockedDynamoDbResponse: List<Map<String, AttributeValue>>
+
+    @RelaxedMockK
+    private lateinit var mockSqsClient: SqsClient
+
+    @MockK
+    private lateinit var awsConfiguration: AwsConfiguration
+
 
     @Given("I have a few orders on my database")
     fun i_have_a_few_orders_on_my_database() {
@@ -62,7 +79,7 @@ class ListOrdersSteps : KoinTest {
                     testModule()
                 }
                 coEvery { orderRepository.findByStatus(status) } returns mockedDynamoDbResponse
-                response = client.get("/v1/kitchen?status=${status}")
+                response = client.get("/v1/kitchen?status=$status")
             }
 
             assertTrue { true }
@@ -123,36 +140,35 @@ class ListOrdersSteps : KoinTest {
 
     private fun Application.testModule() {
         install(Koin) {
-            modules(module {
-                single { orderRepository }
-                single<OrderGateway> { OrderGatewayImpl(get()) }
-                single {
-                    UpdateOrderStatusInteract(
-                        get(),
-                        SendPatchRequestInteract("http://mocked.url")
-                    )
-                }
-                single { ListOrdersInteract(get()) }
-                single { StartOrderInteract(get()) }
-            })
+            modules(testModules)
         }
+    }
+
+    private val testModules = module {
+        single { orderRepository }
+        single<OrderGateway> { OrderGatewayImpl(get()) }
+        single { UpdateOrderStatusInteract(get(), get()) }
+        single { ListOrdersInteract(get()) }
+        single { StartOrderInteract(get()) }
+        single { awsConfiguration }
+        single { mockSqsClient }
+        single { jacksonObjectMapper() }
+        single<MessageProducerGateway> { MessageProducerGatewayImpl(get(), get()) }
     }
 
     @Before
     fun setUp() {
+        MockKAnnotations.init(this, relaxed = true)
+
+        every { awsConfiguration.orderReadyQueueUrl } returns "http://localhost:4566/000000000000/test-queue"
+        every { awsConfiguration.region } returns "us-west-2"
+        every { awsConfiguration.accessKey } returns "test-access-key"
+        every { awsConfiguration.secretAccessKey } returns "test-secret-key"
+        every { awsConfiguration.account } returns "000000000000"
+
+        mockSqsClient = mockk(relaxed = true)
         startKoin {
-            modules(module {
-                single { OrderRepositoryDynamoDbImpl }
-                single<OrderGateway> { OrderGatewayImpl(get()) }
-                single {
-                    UpdateOrderStatusInteract(
-                        get(),
-                        SendPatchRequestInteract("http://mocked.url")
-                    )
-                }
-                single { ListOrdersInteract(get()) }
-                single { StartOrderInteract(get()) }
-            })
+            modules(testModules)
         }
     }
 

@@ -2,7 +2,6 @@ package steps
 
 import br.com.fiap.postech.application.gateways.OrderGateway
 import br.com.fiap.postech.application.usecases.ListOrdersInteract
-import br.com.fiap.postech.application.usecases.SendPatchRequestInteract
 import br.com.fiap.postech.application.usecases.StartOrderInteract
 import br.com.fiap.postech.application.usecases.UpdateOrderStatusInteract
 import br.com.fiap.postech.domain.entities.Order
@@ -114,10 +113,7 @@ class StartOrderSteps : KoinTest {
                 single { orderRepository }
                 single<OrderGateway> { OrderGatewayImpl(get()) }
                 single {
-                    UpdateOrderStatusInteract(
-                        get(),
-                        SendPatchRequestInteract("http://mocked.url")
-                    )
+                    UpdateOrderStatusInteract(get(), get())
                 }
                 single { ListOrdersInteract(get()) }
                 single { StartOrderInteract(get()) }
