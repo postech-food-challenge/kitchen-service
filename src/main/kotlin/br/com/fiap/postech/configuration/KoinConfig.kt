@@ -9,6 +9,7 @@ import br.com.fiap.postech.infrastructure.aws.DynamoDbClientProvider
 import br.com.fiap.postech.infrastructure.aws.IDynamoDbClientProvider
 import br.com.fiap.postech.infrastructure.aws.MessageProducerGatewayImpl
 import br.com.fiap.postech.infrastructure.gateways.OrderGatewayImpl
+import br.com.fiap.postech.infrastructure.listener.StartPreparationListener
 import br.com.fiap.postech.infrastructure.persistence.OrderRepository
 import br.com.fiap.postech.infrastructure.persistence.OrderRepositoryDynamoDbImpl
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -88,7 +89,7 @@ fun getModules(config: ApplicationConfig) = module {
     }
 
     single { jacksonObjectMapper() }
-    single<MessageProducerGateway> { MessageProducerGatewayImpl(get(), get(), get()) }
+    single<MessageProducerGateway> { MessageProducerGatewayImpl(get(), get()) }
 
     single<OrderRepository> { OrderRepositoryDynamoDbImpl(get()) }
     single<OrderGateway> { OrderGatewayImpl(get()) }
@@ -96,4 +97,5 @@ fun getModules(config: ApplicationConfig) = module {
     single { UpdateOrderStatusInteract(get(), get()) }
     single { ListOrdersInteract(get()) }
     single { StartOrderInteract(get()) }
+    single { StartPreparationListener(get(), get(), get()) }
 }

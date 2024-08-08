@@ -9,6 +9,7 @@ plugins {
     id("org.sonarqube") version "4.4.1.3373"
     id("io.ktor.plugin") version "2.3.9"
     id("jacoco")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.9.23"
 }
 
 group = "br.com.fiap.postech"
@@ -49,6 +50,7 @@ dependencies {
     implementation("io.ktor:ktor-server-core")
     implementation("io.ktor:ktor-server-netty")
     implementation("io.ktor:ktor-server-content-negotiation-jvm")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-status-pages:$ktor_version")
     implementation("io.ktor:ktor-serialization-jackson:$ktor_version")

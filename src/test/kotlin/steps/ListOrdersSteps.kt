@@ -153,14 +153,14 @@ class ListOrdersSteps : KoinTest {
         single { awsConfiguration }
         single { mockSqsClient }
         single { jacksonObjectMapper() }
-        single<MessageProducerGateway> { MessageProducerGatewayImpl(get(), get(), get()) }
+        single<MessageProducerGateway> { MessageProducerGatewayImpl(get(), get()) }
     }
 
     @Before
     fun setUp() {
         MockKAnnotations.init(this, relaxed = true)
 
-        every { awsConfiguration.paymentStatusUpdateQueueUrl } returns "http://localhost:4566/000000000000/test-queue"
+        every { awsConfiguration.orderReadyQueueUrl } returns "http://localhost:4566/000000000000/test-queue"
         every { awsConfiguration.region } returns "us-west-2"
         every { awsConfiguration.accessKey } returns "test-access-key"
         every { awsConfiguration.secretAccessKey } returns "test-secret-key"

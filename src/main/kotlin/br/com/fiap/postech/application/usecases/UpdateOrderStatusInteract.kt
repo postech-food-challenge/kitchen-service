@@ -13,20 +13,13 @@ class UpdateOrderStatusInteract(
 ) {
 
     suspend fun updateOrderStatus(id: UUID, newStatus: String): Order {
-        return orderGateway.findById(id)?.let {
-            val status = OrderStatus.validateStatus(newStatus)
+        orderGateway.findById(id) ?: throw NoObjectFoundException("No order found for id = $id")
+        val status = OrderStatus.validateStatus(newStatus)
 
-            when {
-                status == OrderStatus.COMPLETED -> {
-                    orderGateway.delete(id)
-                    messageProducerGateway.sendOrderReadyMessage(id, OrderStatus.COMPLETED)
-                    return it.withUpdatedStatus(status)
-                }
+        if (status == OrderStatus.COMPLETED) {
+            messageProducerGateway.sendOrderReadyMessage(id, OrderStatus.COMPLETED)
+        }
 
-                else -> {
-                    return orderGateway.updateOrderStatus(id, newStatus)
-                }
-            }
-        } ?: throw NoObjectFoundException("No order found for id = $id")
+        return orderGateway.updateOrderStatus(id, status.name)
     }
 }
